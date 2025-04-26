@@ -1,1 +1,1 @@
-export const baseUrl = process.env.BASEURL || "http://localhost:2102"
+export const baseUrl = import.meta.env.BASEURL || "http://localhost:2102"

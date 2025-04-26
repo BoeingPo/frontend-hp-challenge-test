@@ -5,8 +5,15 @@ export type carObjectType = {
     carRegistrationNumber : string
     carBrand : string
     carModel : string
-    note     : string
+    note?     : string
 };
+
+export type insertCarObjectType = {
+    carRegistrationNumber : string
+    carBrand : string
+    carModel : string
+    note?     : string
+}
 
 export type minorResReadCar = {
     records : carObjectType[]
@@ -16,5 +23,11 @@ export type minorResReadCar = {
 export type resReadCar = {
     success : boolean
     message : string
-    data    : 
+    data    : minorResReadCar
+}
+
+export type resCreateCar = {
+    success : boolean
+    message : string
+    data    : carObjectType
 }

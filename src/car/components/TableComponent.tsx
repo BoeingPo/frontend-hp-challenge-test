@@ -17,32 +17,36 @@ import {
     TableRow,
   } from "@/components/ui/table.tsx"
 
-export const TableCarComponent = (dataTable:carObjectType[]) => {
+type dataTableType = {
+  dataTable : carObjectType[]
+} 
 
-    const data : carObjectType[] = mockData 
+export const TableCarComponent = ({dataTable}:dataTableType) => {
+
+    console.log('inside child',dataTable)
+
+    const data : carObjectType[] = dataTable
     const columnHelper = createColumnHelper<carObjectType>()
 
     const columns = [
         columnHelper.accessor('carRegistrationNumber', {
-        
           cell: info => info.getValue(),
           header: ()=> 'Car Registration Number',
           footer: info => info.column.id,
         }),
         columnHelper.accessor('carBrand', {
-          id: 'lastName',
-          cell: info => <i>{info.getValue()}</i>,
+          cell: info => info.getValue(),
           header: () => 'Car Brand',
           footer: info => info.column.id,
         }),
         columnHelper.accessor('carModel', {
           header: () => 'Car Model',
           cell: info => info.renderValue(),
-          footer: info => info.column.id,
+          footer: () => 'Car Model',
         }),
         columnHelper.accessor('note', {
           header: () => 'note',
-          footer: info => info.column.id,
+          footer: () => 'note',
         })
       ]
 
