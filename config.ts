@@ -1,0 +1,1 @@
+export const baseUrl = import.meta.env.BASEURL || "http://localhost:2102"
