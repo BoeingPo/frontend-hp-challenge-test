@@ -9,9 +9,12 @@ createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
   <StrictMode>
     <Routes>
-      <Route path="/" element={<App />} />
+      {/* <Route path="/" element={<App />} /> */}
 
-      <Route path="/car" element={<CarView />} />
+      
+        <Route path="/" element={
+          <CarView />
+          } />
     </Routes>
   </StrictMode>
   </BrowserRouter>,

@@ -1,19 +1,14 @@
-import {
-  SheetHeader,
-} from "@/components/ui/sheet";
+import { SheetHeader } from "@/components/ui/sheet";
 
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertCarObjectType, resCreateCar } from "../type";
-import { createCarReqest } from "../api/Api";
-import { useState } from "react";
+import { carObjectType, resCreateCar } from "../type";
+import { updateCarRequest } from "../api/Api";
+import { useContext, useState } from "react";
+import { CarContext } from "../../context-api/CarProvider";
 
 const schema = z.object({
-  carRegistrationNumber: z
-    .string()
-    .min(3, "Car Registration Number is required")
-    .max(7, "Car Registration Number must not exceed 7 characters"),
   carBrand: z.string().min(1, "Car Brand is required"),
   carModel: z.string().min(1, "Car Model is required"),
   note: z.string().optional(),
@@ -21,13 +16,15 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-type SheetComponentProps = {
-  onSuccess: () => void;
+type updateDataType = {
+  updateData: carObjectType;
 };
 
-export const SheetComponent = ({ onSuccess }: SheetComponentProps) => {
+export const SheetUpdateComponent = ({ updateData }: updateDataType) => {
   const [showSuccessCreated, setShowSuccessCreated] = useState<boolean>(false);
   const [showErrorCreated, setShowErrorCreated] = useState<boolean>(false);
+
+const {fetchData} = useContext(CarContext)!;
 
   const {
     register,
@@ -35,18 +32,23 @@ export const SheetComponent = ({ onSuccess }: SheetComponentProps) => {
     reset,
     formState: { errors },
   } = useForm<FormData>({
+    defaultValues:{
+        carBrand : updateData.carBrand ,
+        carModel :  updateData.carModel,
+        note : updateData.note
+    },
     resolver: zodResolver(schema),
   });
 
-  const creatCar = async (insertObject: insertCarObjectType): Promise<void> => {
+  const updateCar = async (updateObject: carObjectType): Promise<void> => {
     try {
-      const response: resCreateCar = await createCarReqest(insertObject);
+      const response: resCreateCar = await updateCarRequest(updateObject);
 
       if (response.success) {
-        console.log("Success created");
+        console.log("Success updated");
         setShowSuccessCreated(true);
         reset();
-        onSuccess();
+        fetchData();
       }
     } catch (error) {
       console.error(`Request Failed ${error}`);
@@ -55,31 +57,30 @@ export const SheetComponent = ({ onSuccess }: SheetComponentProps) => {
   };
 
   const onSubmit = (data: FormData) => {
-    creatCar(data);
+    console.log(data);
+    const updateOject : carObjectType = {
+    ...updateData,
+    carBrand : data.carBrand,
+    carModel : data.carModel,
+    note     : data.note
+    }
+
+    updateCar(updateOject);
   };
 
   return (
     <div className="flex flex-col pl-6 gap-5">
-      <SheetHeader className="text-3xl font-bold">Insert New Car</SheetHeader>
+      <SheetHeader className="text-3xl font-bold">Update Exist Car</SheetHeader>
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col gap-4 w-64"
       >
         <div>
           <input
-            {...register("carRegistrationNumber")}
-            onChange={() => {
-              setShowSuccessCreated(false);
-              setShowErrorCreated(false);
-            }}
-            placeholder="Car Registration Number"
+            value={updateData.carRegistrationNumber}
+            readOnly
             className="border p-2 rounded w-full"
           />
-          {errors.carRegistrationNumber && (
-            <p className="text-red-500 text-sm">
-              {errors.carRegistrationNumber.message}
-            </p>
-          )}
         </div>
 
         <div>

@@ -1,6 +1,6 @@
 
 import {baseUrl} from "../../../config.ts"
-import {  insertCarObjectType, resCreateCar, resReadCar } from "../type.tsx"
+import { carObjectType ,insertCarObjectType, resCreateCar, resReadCar, updateCarObjectType } from "../type.tsx"
 
 
 
@@ -28,3 +28,45 @@ export const createCarReqest = async (carObjectType :insertCarObjectType) : Prom
     const data = await res.json();
     return data
 }
+
+export const updateCarRequest = async (carObjectType :carObjectType) : Promise<resCreateCar> => {
+    
+    const body:updateCarObjectType = {
+        carBrand : carObjectType.carBrand,
+        carModel : carObjectType.carModel,
+        note : carObjectType.note
+    }
+    
+    const res = await fetch(`${baseUrl}/car/update-car/${carObjectType.id}`,{
+        method:"PATCH",
+        headers :{
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+    })
+
+    if(!res.ok){
+        throw new Error("Failed to update Car collection")
+    }
+    
+    const data = await res.json();
+    return data
+}
+
+export const deleteCarRequest = async (carObjectType :carObjectType) : Promise<resCreateCar> => {
+    
+    const res = await fetch(`${baseUrl}/car/delete-car/${carObjectType.id}`,{
+        method:"DELETE",
+        headers :{
+            'Content-Type': 'application/json'
+        }
+    })
+
+    if(!res.ok){
+        throw new Error("Failed to delete Car collection")
+    }
+    
+    const data = await res.json();
+    return data
+}
+

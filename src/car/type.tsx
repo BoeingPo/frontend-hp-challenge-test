@@ -15,6 +15,12 @@ export type insertCarObjectType = {
     note?     : string
 }
 
+export type updateCarObjectType = {
+    carBrand : string
+    carModel : string
+    note?     : string
+}
+
 export type minorResReadCar = {
     records : carObjectType[]
     totalPage : number

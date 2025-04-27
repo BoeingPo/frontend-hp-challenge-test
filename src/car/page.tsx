@@ -1,12 +1,10 @@
-import { useEffect, useState } from "react";
+import {  useCallback, useEffect, useState } from "react";
 
-import { mockData } from "./mockData";
 import { TableCarComponent } from "./components/TableComponent";
-import { createCarReqest, fetchCarList } from "./api/Api";
+import { fetchCarList } from "./api/Api";
 import {
   carObjectType,
-  insertCarObjectType,
-  resCreateCar,
+  paginationType,
   resReadCar,
 } from "./type";
 
@@ -17,6 +15,7 @@ import {
   } from "@/components/ui/sheet"
 
 import { SheetComponent } from "./components/SheetComponent";
+import { CarContext } from "../context-api/CarProvider";
 
 //enum for pagination
 const pageDirectionEnum = {
@@ -26,26 +25,27 @@ const pageDirectionEnum = {
   fullbackward: "fbw",
 };
 
-export const CarView = () => {
-  console.log(mockData);
+const pageSizeArray = [5,10,15,20,25];
 
+export const CarView = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
   const [totalPage, setTotalPage] = useState<number>(0);
 
   const [carTableData, setCarTableData] = useState<carObjectType[]>([]);
 
-  const [createCarObject, setCreateCarObject] = useState<insertCarObjectType>(
-    {}
-  );
+  const paginationData : paginationType = {
+    page : currentPage,
+    pageSize : pageSize
+  }
 
   //<------- API ----------->//
 
-  const fetchData = async ():Promise<void> => {
+  const fetchData = useCallback(async ():Promise<void> => {
     const response: resReadCar = await fetchCarList(currentPage, pageSize);
     setCarTableData(response.data.records);
     setTotalPage(response.data.totalPage);
-  };
+  },[currentPage,pageSize]);
 
   //<------- function ------->//
   const changePage = (pageDirection: string): void => {
@@ -65,18 +65,20 @@ export const CarView = () => {
   //<------- useEffect ------>//
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   useEffect(() => {
     fetchData();
-  }, [currentPage]);
+  }, [fetchData,currentPage]);
+
 
   useEffect(() => {
     console.log(carTableData);
   }, [carTableData]);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col p-5">
+      <CarContext.Provider value={{fetchData}}>
       <div className="flex text-6xl">Car collection</div>
       <div className="flex flex-row justify-end">
         <Sheet>
@@ -84,11 +86,13 @@ export const CarView = () => {
             + Insert New Car Info
             </SheetTrigger>
             <SheetContent>
-                <SheetComponent/>
+                <SheetComponent onSuccess={fetchData}/>
             </SheetContent>
         </Sheet>
       </div>
-      <TableCarComponent dataTable={carTableData} />
+      <div className="flex min-h-[70vh] max-h-[70vh] overflow-y-auto justify-center">
+      <TableCarComponent dataTable={carTableData} paginationInfo={paginationData}/>
+      </div>
       <div className="flex flex-row justify-center">
         <button
           className="disabled:opacity-15"
@@ -108,8 +112,8 @@ export const CarView = () => {
         >
           {"<"}
         </button>
-        <div className="flex justify-center align-middle mx-5 text-xl">
-          {currentPage}
+        <div className="flex justify-center items-center mx-5 text-xl bg-gray-50 px-2 rounded-md">
+          {currentPage}/{totalPage}
         </div>
         <button
           className="disabled:opacity-15"
@@ -129,7 +133,20 @@ export const CarView = () => {
         >
           {">>"}
         </button>
+        <select
+          value={pageSize}
+          onChange={(e) => {setPageSize(Number(e.target.value))}}
+          className="border p-2 rounded"
+        >
+          <option value="">Select a car brand</option>
+          {pageSizeArray.map((element) => (
+            <option key={element} value={element}>
+              {element}
+            </option>
+          ))}
+        </select>
       </div>
+      </CarContext.Provider>
     </div>
   );
 };
