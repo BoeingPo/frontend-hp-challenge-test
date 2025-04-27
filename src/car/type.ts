@@ -8,6 +8,11 @@ export type carObjectType = {
     note?     : string
 };
 
+export type paginationType = {
+    page : number,
+    pageSize : number
+}
+
 export type insertCarObjectType = {
     carRegistrationNumber : string
     carBrand : string
