@@ -79,7 +79,11 @@ export const CarView = () => {
   return (
     <div className="flex flex-col p-5">
       <CarContext.Provider value={{fetchData}}>
-      <div className="flex text-6xl">Car collection</div>
+      <div className="flex">
+        <div className="text-6xl font-semibold p-5 rounded-3xl shadow-2xl bg-white">
+        Car collection
+        </div>
+      </div>
       <div className="flex flex-row justify-end">
         <Sheet>
             <SheetTrigger className="font-semibold py-2 px-4 rounded shadow-md hover:shadow-lg">
